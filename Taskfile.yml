@@ -13,3 +13,6 @@ tasks:
   run:
     cmds:
       - cargo run {{ .CLI_ARGS }}
+  test:
+    cmds:
+      - cargo test
