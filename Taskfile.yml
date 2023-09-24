@@ -12,4 +12,4 @@ tasks:
     silent: true
   run:
     cmds:
-      - cargo run
+      - cargo run {{ .CLI_ARGS }}
