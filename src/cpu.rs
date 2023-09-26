@@ -28,8 +28,23 @@ impl Cpu {
             let opcode = self.fetch_byte();
 
             match opcode {
-                0xF0 => print!("LDH A, (a8)"),
-                _ => print!("Unknown opcode: {:02X}", opcode),
+                0x00 => {
+                    println!("NOP");
+                }
+                0xF0 => {
+                    let a = 0xFF00 | self.fetch_byte() as u16;
+                    self.registers.a = self.memory[a as usize];
+                    println!("LDH A, 0x{:02X}", a);
+                }
+                0xFE => {
+                    let n = self.fetch_byte();
+                    self.registers.f.zero = self.registers.a == n;
+                    self.registers.f.subtraction = true;
+                    self.registers.f.half_carry = (self.registers.a & 0x0F) < (n & 0x0F);
+                    self.registers.f.carry = self.registers.a < n;
+                    println!("CP 0x{:02X}", n);
+                }
+                _ => panic!("Unknown opcode: 0x{:02X}", opcode),
             };
         }
     }
@@ -38,9 +53,8 @@ impl Cpu {
         let opcode = self.memory[self.registers.pc as usize];
         self.registers.pc += 1;
         opcode
-    }    
+    }
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -16,5 +16,5 @@ fn main() {
     let mut cpu = Cpu::new();
     cpu.load_rom(rom);
 
-    // cpu.run();
+    cpu.run();
 }
