@@ -1,14 +1,16 @@
+mod opcode;
+
 use crate::register::Registers;
 
 pub struct Cpu {
-    registers: Registers,
+    reg: Registers,
     memory: [u8; 0xffff],
 }
 
 impl Cpu {
     pub fn new() -> Self {
         Self {
-            registers: Registers::new(),
+            reg: Registers::new(),
             memory: [0; 0xffff],
         }
     }
@@ -26,32 +28,13 @@ impl Cpu {
     pub fn run(&mut self) {
         loop {
             let opcode = self.fetch_byte();
-
-            match opcode {
-                0x00 => {
-                    println!("NOP");
-                }
-                0xF0 => {
-                    let a = 0xFF00 | self.fetch_byte() as u16;
-                    self.registers.a = self.memory[a as usize];
-                    println!("LDH A, 0x{:02X}", a);
-                }
-                0xFE => {
-                    let n = self.fetch_byte();
-                    self.registers.f.zero = self.registers.a == n;
-                    self.registers.f.subtraction = true;
-                    self.registers.f.half_carry = (self.registers.a & 0x0F) < (n & 0x0F);
-                    self.registers.f.carry = self.registers.a < n;
-                    println!("CP 0x{:02X}", n);
-                }
-                _ => panic!("Unknown opcode: 0x{:02X}", opcode),
-            };
+            self.run_opcode(opcode);
         }
     }
 
     fn fetch_byte(&mut self) -> u8 {
-        let opcode = self.memory[self.registers.pc as usize];
-        self.registers.pc += 1;
+        let opcode = self.memory[self.reg.pc as usize];
+        self.reg.pc += 1;
         opcode
     }
 }
