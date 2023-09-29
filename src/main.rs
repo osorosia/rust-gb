@@ -15,7 +15,7 @@ fn main() {
     println!("a: {}", a);
 
     let args = env::args().skip(1).collect::<Vec<String>>();
-    if args.len() == 0 {
+    if args.is_empty() {
         println!("No ROM file specified");
         return;
     }
