@@ -312,4 +312,46 @@ impl Cpu {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
     }
+
+    fn op_alu(&mut self, opcode: u8) {
+        match opcode {
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+    }
+
+    fn op_misc(&mut self, opcode: u8) {
+        match opcode {
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+    }
+
+    fn op_rot_shift(&mut self, opcode: u8) {
+        match opcode {
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+    }
+
+    fn op_bit(&mut self, opcode: u8) {
+        match opcode {
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+    }
+
+    fn op_jump(&mut self, opcode: u8) {
+        match opcode {
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+    }
+
+    fn op_call(&mut self, opcode: u8) {
+        match opcode {
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+    }
+
+    fn op_return(&mut self, opcode: u8) {
+        match opcode {
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+    }
 }
