@@ -16,3 +16,6 @@ tasks:
   test:
     cmds:
       - cargo test
+  lint:
+    cmds:
+      - cargo clippy
