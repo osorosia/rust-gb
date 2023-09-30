@@ -39,8 +39,7 @@ impl Cpu {
     }
 
     pub(crate) fn read_u8(&mut self, addr: u16) -> u8 {
-        let byte = self.memory[addr as usize];
-        byte
+        self.memory[addr as usize]
     }
 
     pub(crate) fn write_u8(&mut self, addr: u16, byte: u8) {
