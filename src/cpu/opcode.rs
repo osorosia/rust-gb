@@ -2,6 +2,7 @@ use once_cell::sync::Lazy;
 use std::collections::HashMap;
 
 use super::Cpu;
+use crate::cpu::register::{CARRY_FLAG, HALF_CARRY_FLAG, SUBTRACT_FLAG, ZERO_FLAG};
 
 pub struct Opcode {
     pub typ: OpType,
@@ -304,14 +305,22 @@ impl Cpu {
         self.op_log(opcode, op);
 
         match op.typ {
-            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+            OpType::Load => self.op_load(opcode, op),
+            OpType::Alu => self.op_alu(opcode, op),
+            OpType::Misc => self.op_misc(opcode, op),
+            OpType::RotShift => self.op_rot_shift(opcode, op),
+            OpType::BitOp => self.op_bit(opcode, op),
+            OpType::Jump => self.op_jump(opcode, op),
+            OpType::Call => self.op_call(opcode, op),
+            OpType::Return => self.op_return(opcode, op),
+            OpType::Invalid => panic!("Invalid opcode: 0x{:02X}", opcode),
         };
     }
 
     fn op_log(&mut self, opcode: u8, op: &Opcode) {
         let bytes = match op.bytes {
-            1 => format!("{:02X}      ", opcode),
-            2 => format!("{:02X} {:02X}   ", opcode, self.read_u8(self.reg.pc)),
+            1 => format!("{:02X}", opcode),
+            2 => format!("{:02X} {:02X}", opcode, self.read_u8(self.reg.pc)),
             3 => format!(
                 "{:02X} {:02X} {:02X}",
                 opcode,
@@ -321,52 +330,76 @@ impl Cpu {
             _ => panic!("Invalid number of bytes for opcode: 0x{:02X}", opcode),
         };
 
-        println!("{} {}", bytes, op.name);
+        println!(
+            "{:8} {:10} af={:04X} bc={:04X} dw={:04X} hl={:04X} sp={:04X} pc={:04X}",
+            bytes,
+            op.name,
+            self.reg.af(),
+            self.reg.bc(),
+            self.reg.de(),
+            self.reg.hl(),
+            self.reg.sp,
+            self.reg.pc - 0x101
+        );
     }
 
-    fn op_load(&mut self, opcode: u8) {
+    fn op_load(&mut self, opcode: u8, op: &Opcode) {
+        match opcode {
+            0x44 => self.reg.b = self.reg.h,
+            0xF0 => {
+                let n = self.read_u8(self.reg.pc);
+                self.reg.a = self.read_u8(0xFF00 + n as u16);
+            }
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+        self.reg.pc += (op.bytes - 1) as u16;
+    }
+
+    fn op_alu(&mut self, opcode: u8, op: &Opcode) {
+        match opcode {
+            0xFE => {
+                let n = self.read_u8(self.reg.pc);
+                self.reg.set_flag(ZERO_FLAG, self.reg.a == n);
+                self.reg.set_flag(SUBTRACT_FLAG, true);
+                self.reg.set_flag(HALF_CARRY_FLAG, (self.reg.a & 0xF) < (n & 0xF));
+                self.reg.set_flag(CARRY_FLAG, self.reg.a < n);
+            }
+            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
+        }
+        self.reg.pc += (op.bytes - 1) as u16;
+    }
+
+    fn op_misc(&mut self, opcode: u8, op: &Opcode) {
         match opcode {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
     }
 
-    fn op_alu(&mut self, opcode: u8) {
+    fn op_rot_shift(&mut self, opcode: u8, op: &Opcode) {
         match opcode {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
     }
 
-    fn op_misc(&mut self, opcode: u8) {
+    fn op_bit(&mut self, opcode: u8, op: &Opcode) {
         match opcode {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
     }
 
-    fn op_rot_shift(&mut self, opcode: u8) {
+    fn op_jump(&mut self, opcode: u8, op: &Opcode) {
         match opcode {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
     }
 
-    fn op_bit(&mut self, opcode: u8) {
+    fn op_call(&mut self, opcode: u8, op: &Opcode) {
         match opcode {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
     }
 
-    fn op_jump(&mut self, opcode: u8) {
-        match opcode {
-            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
-        }
-    }
-
-    fn op_call(&mut self, opcode: u8) {
-        match opcode {
-            _ => panic!("Unknown opcode: 0x{:02X}", opcode),
-        }
-    }
-
-    fn op_return(&mut self, opcode: u8) {
+    fn op_return(&mut self, opcode: u8, op: &Opcode) {
         match opcode {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
