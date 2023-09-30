@@ -1,5 +1,4 @@
 pub mod cpu;
-pub mod register;
 
 use cpu::Cpu;
 use std::env;

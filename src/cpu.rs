@@ -1,6 +1,7 @@
 mod opcode;
+mod register;
 
-use crate::register::Registers;
+use register::Registers;
 
 pub struct Cpu {
     reg: Registers,
