@@ -359,10 +359,7 @@ impl Cpu {
         match opcode {
             0xFE => {
                 let n = self.read_u8(self.reg.pc);
-                self.reg.set_flag(ZERO_FLAG, self.reg.a == n);
-                self.reg.set_flag(SUBTRACT_FLAG, true);
-                self.reg.set_flag(HALF_CARRY_FLAG, (self.reg.a & 0xF) < (n & 0xF));
-                self.reg.set_flag(CARRY_FLAG, self.reg.a < n);
+                self.alu_sub(n);
             }
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
@@ -403,5 +400,15 @@ impl Cpu {
         match opcode {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         }
+    }
+
+    fn alu_sub(&mut self, n: u8) -> u8 {
+        let a = self.reg.a;
+        let result = a.wrapping_sub(n);
+        self.reg.set_flag(ZERO_FLAG, result == 0);
+        self.reg.set_flag(SUBTRACT_FLAG, true);
+        self.reg.set_flag(HALF_CARRY_FLAG, (a & 0xF) < (n & 0xF));
+        self.reg.set_flag(CARRY_FLAG, a < n);
+        result
     }
 }
