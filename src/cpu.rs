@@ -32,10 +32,19 @@ impl Cpu {
         }
     }
 
-    fn fetch_byte(&mut self) -> u8 {
-        let opcode = self.memory[self.reg.pc as usize];
+    pub(crate) fn fetch_byte(&mut self) -> u8 {
+        let opcode = self.read_u8(self.reg.pc);
         self.reg.pc += 1;
         opcode
+    }
+
+    pub(crate) fn read_u8(&mut self, addr: u16) -> u8 {
+        let byte = self.memory[addr as usize];
+        byte
+    }
+
+    pub(crate) fn write_u8(&mut self, addr: u16, byte: u8) {
+        self.memory[addr as usize] = byte;
     }
 }
 

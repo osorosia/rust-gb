@@ -9,7 +9,6 @@ tasks:
   default:
     cmds:
       - task: run
-    silent: true
   run:
     cmds:
       - cargo run {{ .CLI_ARGS }}

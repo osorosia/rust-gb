@@ -301,10 +301,27 @@ pub static OPCODE_DATA: Lazy<HashMap<u8, Opcode>> = Lazy::new(|| {
 impl Cpu {
     pub(crate) fn run_opcode(&mut self, opcode: u8) {
         let op = OPCODE_DATA.get(&opcode).unwrap();
+        self.op_log(opcode, op);
 
         match op.typ {
             _ => panic!("Unknown opcode: 0x{:02X}", opcode),
         };
+    }
+
+    fn op_log(&mut self, opcode: u8, op: &Opcode) {
+        let bytes = match op.bytes {
+            1 => format!("{:02X}      ", opcode),
+            2 => format!("{:02X} {:02X}   ", opcode, self.read_u8(self.reg.pc)),
+            3 => format!(
+                "{:02X} {:02X} {:02X}",
+                opcode,
+                self.read_u8(self.reg.pc),
+                self.read_u8(self.reg.pc + 1)
+            ),
+            _ => panic!("Invalid number of bytes for opcode: 0x{:02X}", opcode),
+        };
+
+        println!("{} {}", bytes, op.name);
     }
 
     fn op_load(&mut self, opcode: u8) {
